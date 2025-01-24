@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const connectDb = () => {
   try {
     mongoose
-      .connect("mongodb://localhost:27017/Attendance_tracker")
+      .connect(process.env.MONGO_URI)
       .then(() => {
         console.log("MongoDb Connected");
       });
