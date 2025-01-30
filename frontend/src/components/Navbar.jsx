@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
@@ -26,12 +27,17 @@ export default function Navbar() {
     setAnchorEl(null);
   };
 
+  const handleLogin = () => {
+    navigate("/auth");
+  };
+
   const handleLogout = async () => {
     const { data } = await axios.post("http://localhost:5000/auth/logout");
     if (data.success) {
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
-      navigate("/auth");
+      window.location.reload(); 
+      navigate("/");
     }
     handleMenuClose();
   };
@@ -59,7 +65,15 @@ export default function Navbar() {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
           >
             <MenuItem disabled>{user?.name || "User Name"}</MenuItem>
-            <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            {user ? (
+              <>
+                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+              </>
+            ) : (
+              <>
+                <MenuItem onClick={handleLogin}>LogIn</MenuItem>
+              </>
+            )}
           </Menu>
         </Box>
       </Toolbar>

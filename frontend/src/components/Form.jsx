@@ -1,10 +1,13 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import { Typography, TextField, Button, Paper } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import AuthContext from "../context/AuthContext.js";
 
 function Form({ addSubject, setOpen }) {
+  const { user } = useContext(AuthContext); // Get user authentication status
+
   const [newSubject, setNewSubject] = useState({
     subject: "",
     totalClasses: 0,
@@ -13,6 +16,11 @@ function Form({ addSubject, setOpen }) {
 
   const handleAddSubject = async () => {
     try {
+      if (!user) {
+        alert("Please log in to add a subject.");
+        return;
+      }
+
       const res = await axios.post(
         "http://localhost:5000/attendance",
         newSubject

@@ -51,6 +51,7 @@ const AuthPage = () => {
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
         navigate("/");
+        window.location.reload();
         // Handle success (e.g., redirect or show success message)
       } else {
         console.error("Error:", data);
