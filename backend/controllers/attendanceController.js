@@ -26,27 +26,30 @@ export const createSubjects = async (req, res) => {
 };
 
 export const updateSubjects = async (req, res) => {
+  const { id } = req.params;
+  const { subject, attendedClasses, totalClasses } = req.body;
+
   try {
-    const { id } = req.params;
-    const { totalClasses, attendedClasses } = req.body;
-
-    const updateFields = {};
-    if (attendedClasses) updateFields.attendedClasses = attendedClasses;
-    if (totalClasses) updateFields.totalClasses = totalClasses;
-
     const updatedSubject = await attendance.findByIdAndUpdate(
       id,
-      { $inc: updateFields },
+      { subject, attendedClasses, totalClasses },
       { new: true }
     );
-
-    if (!updatedSubject) {
-      return res.status(404).json({ error: "Subject not found" });
-    }
-    res.status(200).json(updatedSubject);
+    res
+      .status(200)
+      .json({ success: true, message: "Updated successfully", updatedSubject });
   } catch (error) {
-    res.status(500).json({ error: "error in updating attendance" });
+    res.status(500).json({ error: "Error updating subject" });
   }
 };
 
-export const deleteSubjects = () => {};
+export const deleteSubjects = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    await attendance.findByIdAndDelete(id);
+    res.status(200).json({ success: true, message: "Deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Error deleting subject" });
+  }
+};

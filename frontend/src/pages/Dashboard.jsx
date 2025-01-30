@@ -25,26 +25,20 @@ function Dashboard() {
   const { user } = useContext(AuthContext); // Get user authentication status
   const [subjects, setSubjects] = useState([]);
   const [open, setOpen] = useState(false);
+  const [editSubject, setEditSubject] = useState(null); // State for editing a subject
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
-  const handleClick = () => {
-    if (!user) {
-      alert("Please log in to add a subject.");
-      return;
-    }
-  };
-
-  const handleOpen = () => {
-    if (!user) {
-      alert("Please log in to add a subject.");
-      return;
-    }
+  const handleOpen = (subject = null) => {
+    setEditSubject(subject); // Set the subject to edit if provided
     setOpen(true);
   };
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setEditSubject(null); // Clear the edit subject when dialog is closed
+    setOpen(false);
+  };
 
   useEffect(() => {
     axios
@@ -68,8 +62,17 @@ function Dashboard() {
     }
   };
 
-  const addSubject = (newSubject) => {
-    setSubjects([...subjects, newSubject]);
+  const handleDeleteSubject = async (id) => {
+    if (!user) {
+      alert("Please log in to delete a subject.");
+      return;
+    }
+    try {
+      await axios.delete(`http://localhost:5000/attendance/${id}`);
+      setSubjects(subjects.filter((subj) => subj._id !== id));
+    } catch (err) {
+      console.error("Error deleting subject:", err.message);
+    }
   };
 
   return (
@@ -114,13 +117,13 @@ function Dashboard() {
                               <div>
                                 <IconButton
                                   color="primary"
-                                  onClick={handleClick}
+                                  onClick={() => handleOpen(subj)} // Open edit form with subject data
                                 >
                                   <EditIcon />
                                 </IconButton>
                                 <IconButton
                                   color="secondary"
-                                  onClick={handleClick}
+                                  onClick={() => handleDeleteSubject(subj._id)} // Handle delete
                                 >
                                   <DeleteIcon />
                                 </IconButton>
@@ -195,7 +198,7 @@ function Dashboard() {
             </Grid>
           )}
 
-          {/* Right Side: Add Subject Form */}
+          {/* Right Side: Add or Edit Subject Form */}
           {isMobile ? (
             <div
               style={{
@@ -206,16 +209,24 @@ function Dashboard() {
                 marginTop: "20px",
               }}
             >
-              <Button variant="contained" color="primary" onClick={handleOpen}>
+              <Button variant="contained" color="primary" onClick={() => handleOpen()}>
                 Add Subject
               </Button>
               <Dialog open={open} onClose={handleClose}>
-                <Form addSubject={addSubject} setOpen={setOpen} />
+                <Form
+                  addSubject={(newSubject) => setSubjects([...subjects, newSubject])}
+                  setOpen={setOpen}
+                  editSubject={editSubject}
+                />
               </Dialog>
             </div>
           ) : (
             <Grid item xs={12} md={6}>
-              <Form addSubject={addSubject} setOpen={setOpen} />
+              <Form
+                addSubject={(newSubject) => setSubjects([...subjects, newSubject])}
+                setOpen={setOpen}
+                editSubject={editSubject}
+              />
             </Grid>
           )}
         </Grid>
