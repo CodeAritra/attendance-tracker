@@ -18,6 +18,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Form from "../components/Form";
+import Navbar from "../components/Navbar";
 
 function Dashboard() {
   const [subjects, setSubjects] = useState([]); // State to manage subjects
@@ -55,173 +56,177 @@ function Dashboard() {
   };
 
   return (
-    <Container maxWidth="lg" style={{ marginTop: "20px" }}>
-      <Typography variant="h4" align="center" gutterBottom>
+    <>
+      <Navbar />
+      <Container maxWidth="lg" style={{ marginTop: "20px" }}>
+        {/* <Typography variant="h4" align="center" gutterBottom>
         Attendance Tracker
-      </Typography>
+      </Typography> */}
 
-      <Grid container spacing={4}>
-        {/* Left Side: Attendance List */}
-        {subjects.length > 0 ? (
-          <>
-            <Grid item xs={12} md={6}>
-              <Paper
-                elevation={3}
-                style={{
-                  padding: "16px",
-                  height: "70vh",
-                  overflowY: "auto", // Enable scroll only for attendance list
-                }}
-              >
-                <Typography variant="h5" gutterBottom>
-                  Attendance
-                </Typography>
-                <List>
-                  {subjects.map((subj) => {
-                    const attendancePercentage = subj.totalClasses
-                      ? (
-                          (subj.attendedClasses / subj.totalClasses) *
-                          100
-                        ).toFixed(2)
-                      : 0;
+        <Grid container spacing={4}>
+          {/* Left Side: Attendance List */}
+          {subjects.length > 0 ? (
+            <>
+              <Grid item xs={12} md={6}>
+                <Paper
+                  elevation={3}
+                  style={{
+                    padding: "16px",
+                    height: "70vh",
+                    overflowY: "auto", // Enable scroll only for attendance list
+                  }}
+                >
+                  <Typography variant="h5" gutterBottom>
+                    Attendance
+                  </Typography>
+                  <List>
+                    {subjects.map((subj) => {
+                      const attendancePercentage = subj.totalClasses
+                        ? (
+                            (subj.attendedClasses / subj.totalClasses) *
+                            100
+                          ).toFixed(2)
+                        : 0;
 
-                    return (
-                      <ListItem key={subj._id} divider>
-                        <ListItemText
-                          primary={
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                              }}
-                            >
-                              <Typography>{subj.subject}</Typography>
-                              <div>
-                                <IconButton
-                                  color="primary"
-                                  //   onClick={() => handleEdit(subj)}
-                                >
-                                  <EditIcon />
-                                </IconButton>
-                                <IconButton
-                                  color="secondary"
-                                  //   onClick={() => handleDelete(subj._id)}
-                                >
-                                  <DeleteIcon />
-                                </IconButton>
-                              </div>
-                            </div>
-                          }
-                          secondary={
-                            <>
+                      return (
+                        <ListItem key={subj._id} divider>
+                          <ListItemText
+                            primary={
                               <div
                                 style={{
                                   display: "flex",
-                                  flexDirection: "column",
-                                  marginTop: 0,
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
                                 }}
                               >
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Typography>
-                                    My Attendance: {subj.attendedClasses}
-                                  </Typography>
+                                <Typography>{subj.subject}</Typography>
+                                <div>
                                   <IconButton
                                     color="primary"
-                                    onClick={() =>
-                                      handleIncrementAttendance(
-                                        subj._id,
-                                        "attendedClasses"
-                                      )
-                                    }
+                                    //   onClick={() => handleEdit(subj)}
                                   >
-                                    <AddIcon />
+                                    <EditIcon />
                                   </IconButton>
-                                </div>
-                                <div
-                                  style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                  }}
-                                >
-                                  <Typography>
-                                    Total Attendance: {subj.totalClasses}
-                                  </Typography>
                                   <IconButton
-                                    color="primary"
-                                    onClick={() =>
-                                      handleIncrementAttendance(
-                                        subj._id,
-                                        "totalClasses"
-                                      )
-                                    }
+                                    color="secondary"
+                                    //   onClick={() => handleDelete(subj._id)}
                                   >
-                                    <AddIcon />
+                                    <DeleteIcon />
                                   </IconButton>
                                 </div>
-                                <Typography
-                                  style={{ marginTop: 0, fontWeight: "bold" }}
-                                >
-                                  Attendance Percentage: {attendancePercentage}%
-                                </Typography>
                               </div>
-                            </>
-                          }
-                        />
-                      </ListItem>
-                    );
-                  })}
-                </List>
-              </Paper>
-            </Grid>
-          </>
-        ) : (
-          <>
-            <Grid item xs={11} md={6}>
-              <Typography
-                variant="h6"
-                align="center"
-                style={{ marginTop: "100px", fontWeight: "bold" }}
-              >
-                No Records
-              </Typography>
-            </Grid>
-          </>
-        )}
+                            }
+                            secondary={
+                              <>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    marginTop: 0,
+                                  }}
+                                >
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Typography>
+                                      My Attendance: {subj.attendedClasses}
+                                    </Typography>
+                                    <IconButton
+                                      color="primary"
+                                      onClick={() =>
+                                        handleIncrementAttendance(
+                                          subj._id,
+                                          "attendedClasses"
+                                        )
+                                      }
+                                    >
+                                      <AddIcon />
+                                    </IconButton>
+                                  </div>
+                                  <div
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <Typography>
+                                      Total Attendance: {subj.totalClasses}
+                                    </Typography>
+                                    <IconButton
+                                      color="primary"
+                                      onClick={() =>
+                                        handleIncrementAttendance(
+                                          subj._id,
+                                          "totalClasses"
+                                        )
+                                      }
+                                    >
+                                      <AddIcon />
+                                    </IconButton>
+                                  </div>
+                                  <Typography
+                                    style={{ marginTop: 0, fontWeight: "bold" }}
+                                  >
+                                    Attendance Percentage:{" "}
+                                    {attendancePercentage}%
+                                  </Typography>
+                                </div>
+                              </>
+                            }
+                          />
+                        </ListItem>
+                      );
+                    })}
+                  </List>
+                </Paper>
+              </Grid>
+            </>
+          ) : (
+            <>
+              <Grid item xs={11} md={6}>
+                <Typography
+                  variant="h6"
+                  align="center"
+                  style={{ marginTop: "100px", fontWeight: "bold" }}
+                >
+                  No Records
+                </Typography>
+              </Grid>
+            </>
+          )}
 
-        {/* Right Side: Add Subject Form */}
-        {isMobile ? (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "100%",
-              marginTop: "20px",
-            }}
-          >
-            <Button variant="contained" color="primary" onClick={handleOpen}>
-              Add Subject
-            </Button>
+          {/* Right Side: Add Subject Form */}
+          {isMobile ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "100%",
+                marginTop: "20px",
+              }}
+            >
+              <Button variant="contained" color="primary" onClick={handleOpen}>
+                Add Subject
+              </Button>
 
-            {/* Dialog for mobile view */}
-            <Dialog open={open} onClose={handleClose}>
+              {/* Dialog for mobile view */}
+              <Dialog open={open} onClose={handleClose}>
+                <Form addSubject={addSubject} setOpen={setOpen} />
+              </Dialog>
+            </div>
+          ) : (
+            // Display form directly for PC/Laptop view
+            <Grid item xs={12} md={6}>
               <Form addSubject={addSubject} setOpen={setOpen} />
-            </Dialog>
-          </div>
-        ) : (
-          // Display form directly for PC/Laptop view
-          <Grid item xs={12} md={6}>
-            <Form addSubject={addSubject} setOpen={setOpen} />
-          </Grid>
-        )}
-      </Grid>
-    </Container>
+            </Grid>
+          )}
+        </Grid>
+      </Container>
+    </>
   );
 }
 

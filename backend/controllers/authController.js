@@ -32,6 +32,7 @@ export const signup = async (req, res) => {
     const token = generateToken(newUser._id);
 
     res.status(201).json({
+      success: true,
       user: { id: newUser._id, name: newUser.name, email: newUser.email },
       token: token,
       message: "User created successfully",
@@ -39,7 +40,11 @@ export const signup = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error in creating user", error: error.message });
+      .json({
+        success: false,
+        message: "Error in creating user",
+        error: error.message,
+      });
   }
 };
 
@@ -64,6 +69,7 @@ export const login = async (req, res) => {
 
     const token = generateToken(user._id);
     res.status(200).json({
+      success: true,
       message: "Login Successful",
       user: { id: user._id, name: user.name, email: user.email },
       token,
@@ -71,10 +77,14 @@ export const login = async (req, res) => {
   } catch (error) {
     res
       .status(500)
-      .json({ message: "Error in logging in", error: error.message });
+      .json({
+        success: false,
+        message: "Error in logging in",
+        error: error.message,
+      });
   }
 };
 
 export const logout = async (req, res) => {
-  res.status(200).json({ message: "Logout successful" });
+  res.status(200).json({ success: true, message: "Logout successful" });
 };
