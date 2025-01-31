@@ -17,13 +17,21 @@ export const SubjectsProvider = ({ children }) => {
     attendedClasses: 0,
   });
 
+  const token = localStorage.getItem("authToken");
+
   // Fetch subjects on mount
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/attendance")
-      .then((res) => setSubjects(res.data))
-      .catch((err) => console.error("Error fetching subjects:", err.message));
-  }, []);
+    const fetchSubjects = () => {
+      axios
+        .get("http://localhost:5000/attendance", {
+          headers: { Authorization: `Bearer ${token}` }, // Send the token
+        })
+        .then((res) => setSubjects(res.data))
+        .catch((err) => console.error("Error fetching subjects:", err.message));
+    };
+
+    fetchSubjects();
+  }, [token]);
 
   const handleAddOrEditSubject = async () => {
     try {
@@ -36,7 +44,10 @@ export const SubjectsProvider = ({ children }) => {
         // Edit existing subject
         const { data } = await axios.put(
           `http://localhost:5000/attendance/${editSubject._id}`,
-          newSubject
+          newSubject,
+          {
+            headers: { Authorization: `Bearer ${token}` }, // Send the token
+          }
         );
 
         if (data.success) {
@@ -53,7 +64,10 @@ export const SubjectsProvider = ({ children }) => {
         // Add new subject
         const { data } = await axios.post(
           "http://localhost:5000/attendance",
-          newSubject
+          newSubject,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
         );
         if (data.success) {
           setSubjects((prev) => [...prev, data.newAttendance]);
@@ -67,6 +81,7 @@ export const SubjectsProvider = ({ children }) => {
       if (setOpen) setOpen(false); // Close dialog if mobile view
     } catch (err) {
       console.error("Error adding or editing subject:", err.message);
+      toast.error("Error");
     }
   };
 
@@ -86,9 +101,15 @@ export const SubjectsProvider = ({ children }) => {
 
       setSubjects(updatedSubjects);
 
-      await axios.put(`http://localhost:5000/attendance/${id}`, {
-        [type]: updatedSubjects.find((subj) => subj._id === id)[type],
-      });
+      await axios.put(
+        `http://localhost:5000/attendance/${id}`,
+        {
+          [type]: updatedSubjects.find((subj) => subj._id === id)[type],
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }, // Send the token
+        }
+      );
     } catch (err) {
       console.error("Error updating attendance:", err.message);
     }
@@ -98,7 +119,10 @@ export const SubjectsProvider = ({ children }) => {
   const deleteSubject = async (id) => {
     try {
       const { data } = await axios.delete(
-        `http://localhost:5000/attendance/${id}`
+        `http://localhost:5000/attendance/${id}`,
+        {
+          headers: { Authorization: `Bearer ${token}` }, // Send the token
+        }
       );
       setSubjects((prev) => prev.filter((subj) => subj._id !== id));
       if (data.success) {

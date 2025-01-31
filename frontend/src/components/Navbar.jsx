@@ -37,7 +37,7 @@ export default function Navbar() {
     if (data.success) {
       logout();
       toast.success(data.message);
-      navigate("/");
+      navigate("/auth");
     }
     handleMenuClose();
   };
