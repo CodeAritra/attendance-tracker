@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import {
   Container,
   Typography,
@@ -30,20 +30,16 @@ function Dashboard() {
     setOpen,
   } = useContext(SubjectContext);
 
-  useEffect(() => {
-    console.log("Sub == ", subjects);
-  });
-
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleOpen = (subject = null) => {
-    setEditSubject(subject); 
+    setEditSubject(subject);
     setOpen(true);
   };
 
   const handleClose = () => {
-    setEditSubject(null); 
+    setEditSubject(null);
     setOpen(false);
   };
 
@@ -67,12 +63,12 @@ function Dashboard() {
                 </Typography>
                 <List>
                   {subjects.map((subj) => {
-                     const attendancePercentage = subj.totalClasses
-                       ? (
-                           (subj.attendedClasses / subj.totalClasses) *
-                           100
-                         ).toFixed(2)
-                       : 0;
+                    const attendancePercentage = subj.totalClasses
+                      ? (
+                          (subj.attendedClasses / subj.totalClasses) *
+                          100
+                        ).toFixed(2)
+                      : 0;
 
                     return (
                       <ListItem key={subj._id} divider>
@@ -89,13 +85,13 @@ function Dashboard() {
                               <div>
                                 <IconButton
                                   color="primary"
-                                  onClick={() => handleOpen(subj)} 
+                                  onClick={() => handleOpen(subj)}
                                 >
                                   <EditIcon />
                                 </IconButton>
                                 <IconButton
                                   color="secondary"
-                                  onClick={() => deleteSubject(subj._id)} 
+                                  onClick={() => deleteSubject(subj._id)}
                                 >
                                   <DeleteIcon />
                                 </IconButton>

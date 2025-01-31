@@ -38,23 +38,32 @@ export const SubjectsProvider = ({ children }) => {
           `http://localhost:5000/attendance/${editSubject._id}`,
           newSubject
         );
-        setSubjects((prev) =>
-          prev.map((subj) =>
-            subj._id === editSubject._id ? data.updatedSubject : subj
-          )
-        );
-        toast.success(data.message);
+
+        if (data.success) {
+          setSubjects((prev) =>
+            prev.map((subj) =>
+              subj._id === editSubject._id ? data.updatedSubject : subj
+            )
+          );
+          toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
       } else {
         // Add new subject
         const { data } = await axios.post(
           "http://localhost:5000/attendance",
           newSubject
         );
-        setSubjects((prev) => [...prev, data.newAttendance]);
-        toast.success(data.message);
+        if (data.success) {
+          setSubjects((prev) => [...prev, data.newAttendance]);
+          toast.success(data.message);
+        } else {
+          toast.error(data.message);
+        }
       }
 
-      setNewSubject({ subject: "", totalClasses: 0, attendedClasses: 0 }); 
+      setNewSubject({ subject: "", totalClasses: 0, attendedClasses: 0 });
       if (setOpen) setOpen(false); // Close dialog if mobile view
     } catch (err) {
       console.error("Error adding or editing subject:", err.message);
@@ -92,7 +101,11 @@ export const SubjectsProvider = ({ children }) => {
         `http://localhost:5000/attendance/${id}`
       );
       setSubjects((prev) => prev.filter((subj) => subj._id !== id));
-      toast.success(data.message);
+      if (data.success) {
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
+      }
     } catch (err) {
       toast.error("Error deleting subject");
       console.error(err.message);

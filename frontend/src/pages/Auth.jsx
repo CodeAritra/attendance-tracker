@@ -48,16 +48,13 @@ const AuthPage = () => {
       const { data } = await axios.post(url, payload);
 
       if (data.success) {
-        console.log("Success:", data);
         login(data.user, data.token);
         navigate("/");
         toast.success(data.message);
       } else {
-        console.error("Error:", data);
         toast.error(data.message);
       }
     } catch (error) {
-      console.error("Network Error:", error);
       toast.error(error);
     }
   };
