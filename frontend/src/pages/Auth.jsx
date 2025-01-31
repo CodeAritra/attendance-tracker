@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import AuthContext from "../context/AuthContext";
 
 const AuthPage = () => {
-  const {login} = useContext(AuthContext);
+  const { login } = useContext(AuthContext);
   const [isSignup, setIsSignup] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -47,22 +47,18 @@ const AuthPage = () => {
     try {
       const { data } = await axios.post(url, payload);
 
-      // console.log(data.success);
-
       if (data.success) {
         console.log("Success:", data);
         login(data.user, data.token);
         navigate("/");
         toast.success(data.message);
-        // window.location.reload();
-        // Handle success (e.g., redirect or show success message)
       } else {
         console.error("Error:", data);
-        // Handle error (e.g., show error message)
+        toast.error(data.message);
       }
     } catch (error) {
       console.error("Network Error:", error);
-      // Handle network error
+      toast.error(error);
     }
   };
 

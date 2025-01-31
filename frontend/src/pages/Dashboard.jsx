@@ -1,5 +1,4 @@
-import { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import { useContext, useEffect } from "react";
 import {
   Container,
   Typography,
@@ -19,73 +18,33 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Form from "../components/Form";
 import Navbar from "../components/Navbar";
-import AuthContext from "../context/AuthContext.js";
-import { toast } from "react-hot-toast";
+import SubjectContext from "../context/SubjectContext.js";
 
 function Dashboard() {
-  const { user } = useContext(AuthContext); 
-  const [subjects, setSubjects] = useState([]);
-  const [open, setOpen] = useState(false);
-  const [editSubject, setEditSubject] = useState(null); // State for editing a subject
+  const {
+    subjects,
+    handleIncrementAttendance,
+    deleteSubject,
+    setEditSubject,
+    open,
+    setOpen,
+  } = useContext(SubjectContext);
+
+  useEffect(() => {
+    console.log("Sub == ", subjects);
+  });
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const handleOpen = (subject = null) => {
-    setEditSubject(subject); // Set the subject to edit if provided
+    setEditSubject(subject); 
     setOpen(true);
   };
 
   const handleClose = () => {
-    setEditSubject(null); // Clear the edit subject when dialog is closed
+    setEditSubject(null); 
     setOpen(false);
-  };
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:5000/attendance")
-      .then((res) => setSubjects(res.data))
-      .catch((err) => console.error("Error fetching subjects:", err.message));
-  }, []);
-
-  const handleIncrementAttendance = async (id, type) => {
-    if (!user) {
-      toast.error("Please log in to update attendance.");
-      return;
-    }
-    try {
-      const updatedSubjects = subjects.map((subj) => {
-        if (subj._id === id) {
-          return { ...subj, [type]: subj[type] + 1 };
-        }
-        return subj;
-      });
-
-      setSubjects(updatedSubjects);
-
-      await axios.put(`http://localhost:5000/attendance/${id}`, {
-        [type]: updatedSubjects.find((subj) => subj._id === id)[type],
-      });
-    } catch (err) {
-      console.error("Error updating attendance:", err.message);
-    }
-  };
-
-
-  const handleDeleteSubject = async (id) => {
-    if (!user) {
-      toast.error("Please log in to delete a subject.");
-      return;
-    }
-    try {
-      const { data } = await axios.delete(
-        `http://localhost:5000/attendance/${id}`
-      );
-      setSubjects(subjects.filter((subj) => subj._id !== id));
-      toast.success(data.message);
-    } catch (err) {
-      console.error("Error deleting subject:", err.message);
-    }
   };
 
   return (
@@ -107,16 +66,16 @@ function Dashboard() {
                   Attendance
                 </Typography>
                 <List>
-                  {subjects.map((subj, index) => {
-                    const attendancePercentage = subj.totalClasses
-                      ? (
-                          (subj.attendedClasses / subj.totalClasses) *
-                          100
-                        ).toFixed(2)
-                      : 0;
+                  {subjects.map((subj) => {
+                     const attendancePercentage = subj.totalClasses
+                       ? (
+                           (subj.attendedClasses / subj.totalClasses) *
+                           100
+                         ).toFixed(2)
+                       : 0;
 
                     return (
-                      <ListItem key={subj._id || index} divider>
+                      <ListItem key={subj._id} divider>
                         <ListItemText
                           primary={
                             <div
@@ -130,13 +89,13 @@ function Dashboard() {
                               <div>
                                 <IconButton
                                   color="primary"
-                                  onClick={() => handleOpen(subj)} // Open edit form with subject data
+                                  onClick={() => handleOpen(subj)} 
                                 >
                                   <EditIcon />
                                 </IconButton>
                                 <IconButton
                                   color="secondary"
-                                  onClick={() => handleDeleteSubject(subj._id)} // Handle delete
+                                  onClick={() => deleteSubject(subj._id)} 
                                 >
                                   <DeleteIcon />
                                 </IconButton>
@@ -230,24 +189,12 @@ function Dashboard() {
                 Add Subject
               </Button>
               <Dialog open={open} onClose={handleClose}>
-                <Form
-                  addSubject={(newSubject) =>
-                    setSubjects([...subjects, newSubject])
-                  }
-                  setOpen={setOpen}
-                  editSubject={editSubject}
-                />
+                <Form />
               </Dialog>
             </div>
           ) : (
             <Grid item xs={12} md={6}>
-              <Form
-                addSubject={(newSubject) =>
-                  setSubjects([...subjects, newSubject])
-                }
-                setOpen={setOpen}
-                editSubject={editSubject}
-              />
+              <Form />
             </Grid>
           )}
         </Grid>

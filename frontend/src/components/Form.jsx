@@ -1,19 +1,10 @@
-/* eslint-disable react/prop-types */
-import { useContext, useState, useEffect } from "react";
-import axios from "axios";
+import { useContext, useEffect } from "react";
 import { Typography, TextField, Button, Paper } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import AuthContext from "../context/AuthContext.js";
-import { toast } from "react-hot-toast";
+import SubjectContext from "../context/SubjectContext.js";
 
-function Form({ addSubject, setOpen, editSubject }) {
-  const { user } = useContext(AuthContext);
-
-  const [newSubject, setNewSubject] = useState({
-    subject: "",
-    totalClasses: 0,
-    attendedClasses: 0,
-  });
+function Form() {
+  const { handleAddOrEditSubject,newSubject,setNewSubject,editSubject } = useContext(SubjectContext);
 
   useEffect(() => {
     if (editSubject) {
@@ -24,40 +15,6 @@ function Form({ addSubject, setOpen, editSubject }) {
       });
     }
   }, [editSubject]);
-
-  const handleAddOrEditSubject = async () => {
-    try {
-      if (!user) {
-        toast.error("Please log in");
-        return;
-      }
-
-      if (editSubject) {
-        // Edit existing subject
-        const { data } = await axios.put(
-          `http://localhost:5000/attendance/${editSubject._id}`,
-          newSubject
-        );
-        addSubject(data); // Update parent state with the updated subject
-      } else {
-        // Add new subject
-        const { data } = await axios.post(
-          "http://localhost:5000/attendance",
-          newSubject
-        );
-        toast.success(data.message);
-        addSubject(data);
-        // Update the parent state with the new subject
-      }
-
-      setNewSubject({ subject: "", totalClasses: 0, attendedClasses: 0 }); // Reset fields
-      if (setOpen) setOpen(false);
-      window.location.reload();
-      // Close dialog if mobile view
-    } catch (err) {
-      console.error("Error adding or editing subject:", err.message);
-    }
-  };
 
   return (
     <Paper elevation={3} style={{ padding: "16px" }}>

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -18,10 +18,7 @@ export default function Navbar() {
   const open = Boolean(anchorEl);
 
   const { user, logout } = useContext(AuthContext);
-  
-  useEffect(() => {
-    console.log("User == ", user);
-  });
+
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -40,7 +37,6 @@ export default function Navbar() {
     if (data.success) {
       logout();
       toast.success(data.message);
-      // window.location.reload();
       navigate("/");
     }
     handleMenuClose();

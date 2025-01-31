@@ -1,11 +1,21 @@
 /* eslint-disable react/prop-types */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import SubjectsContext from "./SubjectContext.js";
+import AuthContext from "./AuthContext.js";
 
 export const SubjectsProvider = ({ children }) => {
+  const { user } = useContext(AuthContext);
   const [subjects, setSubjects] = useState([]);
+  const [editSubject, setEditSubject] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const [newSubject, setNewSubject] = useState({
+    subject: "",
+    totalClasses: 0,
+    attendedClasses: 0,
+  });
 
   // Fetch subjects on mount
   useEffect(() => {
@@ -15,51 +25,61 @@ export const SubjectsProvider = ({ children }) => {
       .catch((err) => console.error("Error fetching subjects:", err.message));
   }, []);
 
-  // Add new subject
-  const addSubject = async (subject) => {
+  const handleAddOrEditSubject = async () => {
     try {
-      const { data } = await axios.post("http://localhost:5000/attendance", {
-        subject,
-        attendedClasses: 0,
-        totalClasses: 0,
-      });
-      setSubjects((prev) => [...prev, data.newSubject]);
-      toast.success("Subject added successfully!");
-    } catch (error) {
-      toast.error("Error adding subject");
-      console.error(error.message);
-    }
-  };
+      if (!user) {
+        toast.error("Please log in");
+        return;
+      }
 
-  // Edit subject
-  const updateSubject = async (id, subject) => {
-    try {
-      const { data } = await axios.put(
-        `http://localhost:5000/attendance/${id}`,
-        { subject }
-      );
-      setSubjects((prev) =>
-        prev.map((subj) => (subj._id === id ? data.updatedSubject : subj))
-      );
-      toast.success("Subject updated successfully!");
-    } catch (error) {
-      toast.error("Error updating subject");
-      console.error(error.message);
+      if (editSubject) {
+        // Edit existing subject
+        const { data } = await axios.put(
+          `http://localhost:5000/attendance/${editSubject._id}`,
+          newSubject
+        );
+        setSubjects((prev) =>
+          prev.map((subj) =>
+            subj._id === editSubject._id ? data.updatedSubject : subj
+          )
+        );
+        toast.success(data.message);
+      } else {
+        // Add new subject
+        const { data } = await axios.post(
+          "http://localhost:5000/attendance",
+          newSubject
+        );
+        setSubjects((prev) => [...prev, data.newAttendance]);
+        toast.success(data.message);
+      }
+
+      setNewSubject({ subject: "", totalClasses: 0, attendedClasses: 0 }); 
+      if (setOpen) setOpen(false); // Close dialog if mobile view
+    } catch (err) {
+      console.error("Error adding or editing subject:", err.message);
     }
   };
 
   // Increment attendance
   const handleIncrementAttendance = async (id, type) => {
+    if (!user) {
+      toast.error("Please log in to update attendance.");
+      return;
+    }
     try {
-      const { data } = await axios.put(
-        `http://localhost:5000/attendance/${id}`,
-        {
-          [type]: 1,
+      const updatedSubjects = subjects.map((subj) => {
+        if (subj._id === id) {
+          return { ...subj, [type]: subj[type] + 1 };
         }
-      );
-      setSubjects((prev) =>
-        prev.map((subj) => (subj._id === id ? data : subj))
-      );
+        return subj;
+      });
+
+      setSubjects(updatedSubjects);
+
+      await axios.put(`http://localhost:5000/attendance/${id}`, {
+        [type]: updatedSubjects.find((subj) => subj._id === id)[type],
+      });
     } catch (err) {
       console.error("Error updating attendance:", err.message);
     }
@@ -83,15 +103,18 @@ export const SubjectsProvider = ({ children }) => {
     <SubjectsContext.Provider
       value={{
         subjects,
-        addSubject,
-        updateSubject,
         handleIncrementAttendance,
         deleteSubject,
+        handleAddOrEditSubject,
+        newSubject,
+        setNewSubject,
+        editSubject,
+        setEditSubject,
+        open,
+        setOpen,
       }}
     >
       {children}
     </SubjectsContext.Provider>
   );
 };
-
-export default SubjectsContext;
