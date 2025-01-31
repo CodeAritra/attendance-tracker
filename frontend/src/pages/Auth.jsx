@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import {
   Box,
   Button,
@@ -9,10 +9,13 @@ import {
   Switch,
   FormControlLabel,
 } from "@mui/material";
+import { toast } from "react-hot-toast";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import AuthContext from "../context/AuthContext";
 
 const AuthPage = () => {
+  const {login} = useContext(AuthContext);
   const [isSignup, setIsSignup] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -48,10 +51,10 @@ const AuthPage = () => {
 
       if (data.success) {
         console.log("Success:", data);
-        localStorage.setItem("authToken", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
+        login(data.user, data.token);
         navigate("/");
-        window.location.reload();
+        toast.success(data.message);
+        // window.location.reload();
         // Handle success (e.g., redirect or show success message)
       } else {
         console.error("Error:", data);

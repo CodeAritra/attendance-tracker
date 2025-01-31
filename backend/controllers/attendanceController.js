@@ -18,7 +18,9 @@ export const createSubjects = async (req, res) => {
       attendedClasses,
     });
     await newAttendance.save();
-    res.status(200).json(newAttendance);
+    res
+      .status(200)
+      .json({ success: true, message: "Added successfully", newAttendance });
   } catch (error) {
     res.status(500).json({ error: "Error in creating subjects" });
     console.log(error);
@@ -28,13 +30,16 @@ export const createSubjects = async (req, res) => {
 export const updateSubjects = async (req, res) => {
   const { id } = req.params;
   const { subject, attendedClasses, totalClasses } = req.body;
+  
+  const newSubject = {};
+  if (subject) newSubject.subject = subject;
+  if (attendedClasses) newSubject.attendedClasses = attendedClasses;
+  if (totalClasses) newSubject.totalClasses = totalClasses;
 
   try {
-    const updatedSubject = await attendance.findByIdAndUpdate(
-      id,
-      { subject, attendedClasses, totalClasses },
-      { new: true }
-    );
+    const updatedSubject = await attendance.findByIdAndUpdate(id, newSubject, {
+      new: true,
+    });
     res
       .status(200)
       .json({ success: true, message: "Updated successfully", updatedSubject });

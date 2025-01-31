@@ -19,10 +19,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Form from "../components/Form";
 import Navbar from "../components/Navbar";
-import AuthContext from "../context/AuthContext.js"; // Import AuthContext
+import AuthContext from "../context/AuthContext.js";
+import { toast } from "react-hot-toast";
 
 function Dashboard() {
-  const { user } = useContext(AuthContext); // Get user authentication status
+  const { user } = useContext(AuthContext); 
   const [subjects, setSubjects] = useState([]);
   const [open, setOpen] = useState(false);
   const [editSubject, setEditSubject] = useState(null); // State for editing a subject
@@ -49,27 +50,39 @@ function Dashboard() {
 
   const handleIncrementAttendance = async (id, type) => {
     if (!user) {
-      alert("Please log in to update attendance.");
+      toast.error("Please log in to update attendance.");
       return;
     }
     try {
-      const res = await axios.put(`http://localhost:5000/attendance/${id}`, {
-        [type]: 1,
+      const updatedSubjects = subjects.map((subj) => {
+        if (subj._id === id) {
+          return { ...subj, [type]: subj[type] + 1 };
+        }
+        return subj;
       });
-      setSubjects(subjects.map((subj) => (subj._id === id ? res.data : subj)));
+
+      setSubjects(updatedSubjects);
+
+      await axios.put(`http://localhost:5000/attendance/${id}`, {
+        [type]: updatedSubjects.find((subj) => subj._id === id)[type],
+      });
     } catch (err) {
       console.error("Error updating attendance:", err.message);
     }
   };
 
+
   const handleDeleteSubject = async (id) => {
     if (!user) {
-      alert("Please log in to delete a subject.");
+      toast.error("Please log in to delete a subject.");
       return;
     }
     try {
-      await axios.delete(`http://localhost:5000/attendance/${id}`);
+      const { data } = await axios.delete(
+        `http://localhost:5000/attendance/${id}`
+      );
       setSubjects(subjects.filter((subj) => subj._id !== id));
+      toast.success(data.message);
     } catch (err) {
       console.error("Error deleting subject:", err.message);
     }
@@ -94,7 +107,7 @@ function Dashboard() {
                   Attendance
                 </Typography>
                 <List>
-                  {subjects.map((subj) => {
+                  {subjects.map((subj, index) => {
                     const attendancePercentage = subj.totalClasses
                       ? (
                           (subj.attendedClasses / subj.totalClasses) *
@@ -103,7 +116,7 @@ function Dashboard() {
                       : 0;
 
                     return (
-                      <ListItem key={subj._id} divider>
+                      <ListItem key={subj._id || index} divider>
                         <ListItemText
                           primary={
                             <div
@@ -209,12 +222,18 @@ function Dashboard() {
                 marginTop: "20px",
               }}
             >
-              <Button variant="contained" color="primary" onClick={() => handleOpen()}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => handleOpen()}
+              >
                 Add Subject
               </Button>
               <Dialog open={open} onClose={handleClose}>
                 <Form
-                  addSubject={(newSubject) => setSubjects([...subjects, newSubject])}
+                  addSubject={(newSubject) =>
+                    setSubjects([...subjects, newSubject])
+                  }
                   setOpen={setOpen}
                   editSubject={editSubject}
                 />
@@ -223,7 +242,9 @@ function Dashboard() {
           ) : (
             <Grid item xs={12} md={6}>
               <Form
-                addSubject={(newSubject) => setSubjects([...subjects, newSubject])}
+                addSubject={(newSubject) =>
+                  setSubjects([...subjects, newSubject])
+                }
                 setOpen={setOpen}
                 editSubject={editSubject}
               />

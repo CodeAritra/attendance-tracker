@@ -4,9 +4,10 @@ import axios from "axios";
 import { Typography, TextField, Button, Paper } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import AuthContext from "../context/AuthContext.js";
+import { toast } from "react-hot-toast";
 
 function Form({ addSubject, setOpen, editSubject }) {
-  const { user } = useContext(AuthContext); // Get user authentication status
+  const { user } = useContext(AuthContext);
 
   const [newSubject, setNewSubject] = useState({
     subject: "",
@@ -27,28 +28,30 @@ function Form({ addSubject, setOpen, editSubject }) {
   const handleAddOrEditSubject = async () => {
     try {
       if (!user) {
-        alert("Please log in to add or edit a subject.");
+        toast.error("Please log in");
         return;
       }
 
       if (editSubject) {
         // Edit existing subject
-        const res = await axios.put(
+        const { data } = await axios.put(
           `http://localhost:5000/attendance/${editSubject._id}`,
           newSubject
         );
-        addSubject(res.data); // Update parent state with the updated subject
+        addSubject(data); // Update parent state with the updated subject
       } else {
         // Add new subject
-        const res = await axios.post(
+        const { data } = await axios.post(
           "http://localhost:5000/attendance",
           newSubject
         );
-        addSubject(res.data); // Update the parent state with the new subject
+        toast.success(data.message);
+        addSubject(data);
+        // Update the parent state with the new subject
       }
 
       setNewSubject({ subject: "", totalClasses: 0, attendedClasses: 0 }); // Reset fields
-      if (setOpen) setOpen(false); 
+      if (setOpen) setOpen(false);
       window.location.reload();
       // Close dialog if mobile view
     } catch (err) {
