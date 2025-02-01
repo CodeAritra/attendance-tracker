@@ -42,7 +42,7 @@ function Dashboard() {
     setTimeout(() => {
       setLoading(false);
       setDataFetched(true); // Data fetching is complete
-    }, 1200);
+    }, 1500);
   }, [subjects]); // This effect runs when `subjects` updates
 
   const handleOpen = (subject = null) => {
