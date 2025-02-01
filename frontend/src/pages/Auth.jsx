@@ -33,8 +33,8 @@ const AuthPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = isSignup
-      ? "http://localhost:5000/auth/signup"
-      : "http://localhost:5000/auth/login";
+      ? "https://attendance-tracker-backend-ssna.onrender.com/auth/signup"
+      : "https://attendance-tracker-backend-ssna.onrender.com/auth/login";
 
     const payload = isSignup
       ? {

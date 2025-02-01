@@ -33,7 +33,7 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    const { data } = await axios.post("http://localhost:5000/auth/logout");
+    const { data } = await axios.post("https://attendance-tracker-backend-ssna.onrender.com/auth/logout");
     if (data.success) {
       logout();
       toast.success(data.message);

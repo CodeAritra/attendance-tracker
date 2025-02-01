@@ -23,7 +23,7 @@ export const SubjectsProvider = ({ children }) => {
   useEffect(() => {
     const fetchSubjects = () => {
       axios
-        .get("http://localhost:5000/attendance", {
+        .get("https://attendance-tracker-backend-ssna.onrender.com/attendance", {
           headers: { Authorization: `Bearer ${token}` }, // Send the token
         })
         .then((res) => setSubjects(res.data))
@@ -43,7 +43,7 @@ export const SubjectsProvider = ({ children }) => {
       if (editSubject) {
         // Edit existing subject
         const { data } = await axios.put(
-          `http://localhost:5000/attendance/${editSubject._id}`,
+          `https://attendance-tracker-backend-ssna.onrender.com/attendance/${editSubject._id}`,
           newSubject,
           {
             headers: { Authorization: `Bearer ${token}` }, // Send the token
@@ -63,7 +63,7 @@ export const SubjectsProvider = ({ children }) => {
       } else {
         // Add new subject
         const { data } = await axios.post(
-          "http://localhost:5000/attendance",
+          "https://attendance-tracker-backend-ssna.onrender.com/attendance",
           newSubject,
           {
             headers: { Authorization: `Bearer ${token}` },
@@ -102,7 +102,7 @@ export const SubjectsProvider = ({ children }) => {
       setSubjects(updatedSubjects);
 
       await axios.put(
-        `http://localhost:5000/attendance/${id}`,
+        `https://attendance-tracker-backend-ssna.onrender.com/attendance/${id}`,
         {
           [type]: updatedSubjects.find((subj) => subj._id === id)[type],
         },
@@ -119,7 +119,7 @@ export const SubjectsProvider = ({ children }) => {
   const deleteSubject = async (id) => {
     try {
       const { data } = await axios.delete(
-        `http://localhost:5000/attendance/${id}`,
+        `https://attendance-tracker-backend-ssna.onrender.com/attendance/${id}`,
         {
           headers: { Authorization: `Bearer ${token}` }, // Send the token
         }
