@@ -8,13 +8,13 @@ import connectDb from "./db/db.js";
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT ;
 
 //mongoose connection
 connectDb();
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: "*" }));
 
 app.use("/auth", authRoute);
 app.use("/attendance", attendanceRoute);

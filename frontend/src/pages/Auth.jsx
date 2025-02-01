@@ -46,16 +46,31 @@ const AuthPage = () => {
 
     try {
       const { data } = await axios.post(url, payload);
+      console.log("data == ", data);
 
       if (data.success) {
         login(data.user, data.token);
         navigate("/");
         toast.success(data.message);
+        console.log("data == ", data);
       } else {
+        console.log("data == ", data);
+
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error);
+      console.error("Error in authentication request:", error);
+      // Check if it's a network error or an API error
+      if (error.response) {
+        // Handle API errors (like 400, 500, etc.)
+        toast.error(error.response.data.message || "Something went wrong.");
+      } else if (error.request) {
+        // Handle network errors
+        toast.error("Network error: Please check your connection.");
+      } else {
+        // Catch any other errors
+        toast.error("An unexpected error occurred.");
+      }
     }
   };
 
