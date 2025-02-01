@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -18,7 +18,13 @@ export default function Navbar() {
   const open = Boolean(anchorEl);
 
   const { user, logout } = useContext(AuthContext);
+  const [userLoaded, setUserLoaded] = useState(false); 
 
+  useEffect(() => {
+    if (user !== undefined) {
+      setUserLoaded(true);
+    }
+  }, [user]); 
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -33,7 +39,9 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    const { data } = await axios.post("https://attendance-tracker-backend-ssna.onrender.com/auth/logout");
+    const { data } = await axios.post(
+      "https://attendance-tracker-backend-ssna.onrender.com/auth/logout"
+    );
     if (data.success) {
       logout();
       toast.success(data.message);
@@ -52,11 +60,13 @@ export default function Navbar() {
 
         {/* Right side: User Info */}
         <Box>
-          <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
-            <Avatar>
-              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
-            </Avatar>
-          </IconButton>
+          {userLoaded && ( // Only render Avatar when user data is loaded
+            <IconButton onClick={handleMenuOpen} sx={{ p: 0 }}>
+              <Avatar>
+                {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+              </Avatar>
+            </IconButton>
+          )}
           <Menu
             anchorEl={anchorEl}
             open={open}
@@ -66,13 +76,9 @@ export default function Navbar() {
           >
             <MenuItem disabled>{user?.name || "User Name"}</MenuItem>
             {user ? (
-              <>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
-              </>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
             ) : (
-              <>
-                <MenuItem onClick={handleLogin}>LogIn</MenuItem>
-              </>
+              <MenuItem onClick={handleLogin}>LogIn</MenuItem>
             )}
           </Menu>
         </Box>
